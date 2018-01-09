@@ -22,7 +22,7 @@ MyWindow::~MyWindow()
 }
 
 MyWindow::MyWindow()
-    : mProgram(0), currentTimeMs(0), currentTimeS(0), tPrev(0), angle(0.0)
+    : mProgram(0), currentTimeMs(0), currentTimeS(0), tPrev(0), angle(M_PI/4.0f)
 {
     setSurfaceType(QWindow::OpenGLSurface);
     setFlags(Qt::Window | Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
@@ -82,6 +82,7 @@ void MyWindow::initialize()
 
     initMatrices();
     setupFBO();
+    GenerateTexture(200.0f, 0.5f, 512, 512, true);
 
     glFrontFace(GL_CCW);
     glEnable(GL_DEPTH_TEST);
@@ -165,7 +166,8 @@ void MyWindow::CreateVertexBuffer()
     mFuncs->glGenVertexArrays(1, &mVAOTorus);
     mFuncs->glBindVertexArray(mVAOTorus);
 
-    mTorus = new Torus(1.75f * 0.75f, 0.75f * 0.75f, 50, 50);
+    //mTorus = new Torus(1.75f * 0.75f, 0.75f * 0.75f, 50, 50);
+    mTorus = new Torus(0.7f * 1.5f, 0.3f * 1.5f, 50, 50);
 
     // Create and populate the buffer objects
     unsigned int TorusHandles[3];
@@ -236,16 +238,14 @@ void MyWindow::CreateVertexBuffer()
 
 void MyWindow::initMatrices()
 {
-    ModelMatrixTeapot.translate( 0.0f, 0.0f, -2.0f);
-    ModelMatrixTeapot.rotate(   45.0f, QVector3D(0.0f, 1.0f, 0.0f));
     ModelMatrixTeapot.rotate(  -90.0f, QVector3D(1.0f, 0.0f, 0.0f));
 
-    ModelMatrixTorus.translate( -1.0f, 0.75f, 3.0f);
-    ModelMatrixTorus.rotate(  -90.0f, QVector3D(1.0f, 0.0f, 0.0f));
+    ModelMatrixTorus.translate( 1.0f, 1.0f, 3.0f);
+    ModelMatrixTorus.rotate   ( 90.0f, QVector3D(1.0f, 0.0f, 0.0f));
 
-    //ModelMatrixPlane.translate(0.0f, -0.45f, 0.0f);
+    ModelMatrixPlane.translate(0.0f, -0.75f, 0.0f);
 
-    ViewMatrix.lookAt(QVector3D(5.0f, 5.0f, 7.5f), QVector3D(0.0f,0.75f,0.0f), QVector3D(0.0f,1.0f,0.0f));
+    ViewMatrix.lookAt(QVector3D(7.0f * cos(angle),4.0f,7.0f * sin(angle)), QVector3D(0.0f,0.0f,0.0f), QVector3D(0.0f,1.0f,0.0f));
 }
 
 void MyWindow::resizeEvent(QResizeEvent *)
@@ -296,6 +296,7 @@ void MyWindow::render()
 
 void MyWindow::pass1()
 {   
+    glClearColor(0.5f,0.5f,0.5f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // *** Draw teapot
@@ -307,7 +308,7 @@ void MyWindow::pass1()
     QVector4D worldLight = QVector4D(0.0f, 0.0f, 0.0f, 1.0f);
 
     mProgram->bind();
-    {
+    {        
         mFuncs->glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &pass1Index);
 
         mProgram->setUniformValue("Light.Position",  worldLight );
@@ -325,6 +326,10 @@ void MyWindow::pass1()
         mProgram->setUniformValue("Material.Ks", 0.95f, 0.95f, 0.95f);
         mProgram->setUniformValue("Material.Ka", 0.9f * 0.3f, 0.5f * 0.3f, 0.3f * 0.3f);
         mProgram->setUniformValue("Material.Shininess", 100.0f);       
+
+        mProgram->setUniformValue("Width",  (float)this->width());
+        mProgram->setUniformValue("Height", (float)this->height());
+        mProgram->setUniformValue("Radius", (float)this->width() / 3.5f);
 
         glDrawElements(GL_TRIANGLES, 6 * mTeapot->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
@@ -359,6 +364,10 @@ void MyWindow::pass1()
         mProgram->setUniformValue("Material.Ka", 0.2f, 0.2f, 0.2f);
         mProgram->setUniformValue("Material.Shininess", 180.0f);
 
+        mProgram->setUniformValue("Width",  (float)this->width());
+        mProgram->setUniformValue("Height", (float)this->height());
+        mProgram->setUniformValue("Radius", (float)this->width() / 3.5f);
+
         glDrawElements(GL_TRIANGLES, 6 * mPlane->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
         glDisableVertexAttribArray(0);
@@ -391,6 +400,10 @@ void MyWindow::pass1()
         mProgram->setUniformValue("Material.Ka", 0.9f * 0.3f, 0.5f * 0.3f, 0.3f * 0.3f);
         mProgram->setUniformValue("Material.Shininess", 100.0f);
 
+        mProgram->setUniformValue("Width",  (float)this->width());
+        mProgram->setUniformValue("Height", (float)this->height());
+        mProgram->setUniformValue("Radius", (float)this->width() / 2.8f);
+
         glDrawElements(GL_TRIANGLES, 6 * mTorus->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
         glDisableVertexAttribArray(0);
@@ -406,7 +419,6 @@ void MyWindow::pass2()
     mFuncs->glBindVertexArray(mVAOFSQuad);
 
     glEnableVertexAttribArray(0);
-    //glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
     mProgram->bind();
@@ -421,15 +433,10 @@ void MyWindow::pass2()
         mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
         mProgram->setUniformValue("MVP", proj * mv1);
 
-        mProgram->setUniformValue("Width",  this->width());
-        mProgram->setUniformValue("Height", this->height());
-        mProgram->setUniformValue("Radius", this->width() / 3.5f);
-
         // Render the full-screen quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         glDisableVertexAttribArray(0);
-        //glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
     }
     mProgram->release();
@@ -604,7 +611,7 @@ void MyWindow::GenerateTexture(float baseFreq, float persistence, int w, int h, 
         }
     }
 
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1);
 
     GLuint TexObject;
     glGenTextures(1, &TexObject);
