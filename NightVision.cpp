@@ -421,6 +421,10 @@ void MyWindow::pass2()
         mProgram->setUniformValue("NormalMatrix", mv1.normalMatrix());
         mProgram->setUniformValue("MVP", proj * mv1);
 
+        mProgram->setUniformValue("Width",  this->width());
+        mProgram->setUniformValue("Height", this->height());
+        mProgram->setUniformValue("Radius", this->width() / 3.5f);
+
         // Render the full-screen quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
