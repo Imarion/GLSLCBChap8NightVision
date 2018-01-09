@@ -86,6 +86,9 @@ void MyWindow::initialize()
 
     glFrontFace(GL_CCW);
     glEnable(GL_DEPTH_TEST);
+
+    aSpring.setAmplitude(0.2f);
+    aSpring.setObjectMass(10.0f);
 }
 
 void MyWindow::CreateVertexBuffer()
@@ -281,8 +284,17 @@ void MyWindow::render()
     angle += 0.25f * deltaT;
     if (angle > TwoPI) angle -= TwoPI;
 
-    static float EvolvingVal = 0;
-    EvolvingVal += 0.1f;
+    static float EvolvingVal = 0;    
+
+    ViewMatrix.setToIdentity();
+    ViewMatrix.lookAt(QVector3D(7.0f * cos(M_PI/4.0f),4.0f,7.0f * sin(M_PI/4.0f)), QVector3D(0.0f,0.0f,0.0f), QVector3D(0.0f,1.0f,0.0f));
+    if (SpringAnimate == true)
+    {
+        EvolvingVal += 0.01f;
+        qDebug() << "EvolvingVal " << EvolvingVal << endl;
+    }
+    double springMotion =aSpring.calcMotion((double)EvolvingVal);
+    ViewMatrix.translate(0.0f, springMotion, 0.0f);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -504,11 +516,12 @@ void MyWindow::keyPressEvent(QKeyEvent *keyEvent)
             break;
         case Qt::Key_Home:
             break;
-        case Qt::Key_Z:
+        case Qt::Key_S:
+            SpringAnimate = ! SpringAnimate;
             break;
         case Qt::Key_Q:
             break;
-        case Qt::Key_S:
+        case Qt::Key_B:
             break;
         case Qt::Key_D:
             break;

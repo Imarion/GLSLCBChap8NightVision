@@ -14,14 +14,16 @@ SOURCES += main.cpp \
     NightVision.cpp \
     teapot.cpp \
     vboplane.cpp \
-    torus.cpp
+    torus.cpp \
+    SpringForce\springforce.cpp
 
 HEADERS += \
     NightVision.h \
     teapotdata.h \
     teapot.h \
     vboplane.h \
-    torus.h
+    torus.h \
+    SpringForce\springforce.h
 
 OTHER_FILES += \
     fshader.txt \

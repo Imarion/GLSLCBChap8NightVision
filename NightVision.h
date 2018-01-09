@@ -16,6 +16,8 @@
 #include "vboplane.h"
 #include "torus.h"
 
+#include "SpringForce/springforce.h"
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -77,7 +79,10 @@ private:
     VBOPlane *mPlane;
     Torus    *mTorus;
 
-    QMatrix4x4 ModelMatrixTeapot, ModelMatrixPlane, ModelMatrixTorus, ViewMatrix, ProjectionMatrix;
+    QMatrix4x4 ModelMatrixTeapot, ModelMatrixPlane, ModelMatrixTorus, ViewMatrix, ProjectionMatrix, SpringMatrix;
+
+    bool        SpringAnimate = false;
+    SpringForce aSpring;
 
     //debug
     void printMatrix(const QMatrix4x4& mat);
