@@ -82,6 +82,7 @@ private:
     QMatrix4x4 ModelMatrixTeapot, ModelMatrixPlane, ModelMatrixTorus, ViewMatrix, ProjectionMatrix, SpringMatrix;
 
     bool        SpringAnimate = false;
+    bool        NightVision   = false;
     SpringForce aSpring;
 
     //debug

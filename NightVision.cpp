@@ -299,11 +299,17 @@ void MyWindow::render()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, mFBOHandle);
-    pass1();
+    if (NightVision == false) {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        pass1();
+        mContext->swapBuffers(this);
+    } else {
+        glBindFramebuffer(GL_FRAMEBUFFER, mFBOHandle);
+        pass1();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    pass2();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        pass2();
+    }
 }
 
 void MyWindow::pass1()
@@ -519,7 +525,8 @@ void MyWindow::keyPressEvent(QKeyEvent *keyEvent)
         case Qt::Key_S:
             SpringAnimate = ! SpringAnimate;
             break;
-        case Qt::Key_Q:
+        case Qt::Key_N:
+            NightVision = ! NightVision;
             break;
         case Qt::Key_B:
             break;
