@@ -329,7 +329,7 @@ void MyWindow::pass1()
 
         mProgram->setUniformValue("Width",  (float)this->width());
         mProgram->setUniformValue("Height", (float)this->height());
-        mProgram->setUniformValue("Radius", (float)this->width() / 3.5f);
+        mProgram->setUniformValue("Radius", (float)this->width() / 2.8f);
 
         glDrawElements(GL_TRIANGLES, 6 * mTeapot->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
@@ -366,7 +366,7 @@ void MyWindow::pass1()
 
         mProgram->setUniformValue("Width",  (float)this->width());
         mProgram->setUniformValue("Height", (float)this->height());
-        mProgram->setUniformValue("Radius", (float)this->width() / 3.5f);
+        mProgram->setUniformValue("Radius", (float)this->width() / 2.8f);
 
         glDrawElements(GL_TRIANGLES, 6 * mPlane->getnFaces(), GL_UNSIGNED_INT, ((GLubyte *)NULL + (0)));
 
